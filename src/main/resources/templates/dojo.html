@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>Dojo</title>
+</head>
+<body>
+<div>
+    <table>
+        <tr>
+            <td>
+                AVATAR
+            </td>
+            <td>
+                visiteur, aucun role
+            </td>
+        </tr>
+    </table>
+    <button>Ouvrir une session</button>
+</div>
+<hr />
+<div>
+    <table>
+        <tr>
+            <td>Lien pour déboguage</td>
+        </tr>
+        <tr>
+            <td>Cliquer <a href="consoleBD">ici</a> pour accéder à la section Avatar</td>
+        </tr>
+        <tr>
+            <td>Cliquer <a href="consoleBD">ici</a> pour la consoleBD</td>
+        </tr>
+    </table>
+</div>
+<hr />
+<div>
+    <table>
+        <tr>
+            <td>Cliquer <a href="notreEcole">ici</a> pour voir les membre de notre école</td>
+        </tr>
+        <tr>
+            <td>Cliquer <a href="kumite">ici</a> pour accéder à la salle de kumite (identifié)</td>
+        </tr>
+        <tr>
+            <td>Cliquer <a href="passageGrade">ici</a> pour accéder au passage des grades (sensei ou vénérable)</td>
+        </tr>
+    </table>
+</div>
+<hr />
+<div sec:authorize="isAuthenticated()">
+    Votre message:
+    <br />
+    <input placeholder="Message">
+    <br />
+    <button>Envoyer message privé</button>
+    <br />
+    <button sec:authorize="hasAuthority('ANCIEN')">Envoyer message public</button>
+</div>
+</body>
+</html>
