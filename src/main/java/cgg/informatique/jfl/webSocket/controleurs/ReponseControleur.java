@@ -2,14 +2,16 @@ package cgg.informatique.jfl.webSocket.controleurs;
 
 
 
-        import cgg.informatique.jfl.webSocket.Message;
-        import cgg.informatique.jfl.webSocket.Reponse;
-        import org.springframework.messaging.handler.annotation.MessageMapping;
-        import org.springframework.messaging.handler.annotation.SendTo;
-        import org.springframework.stereotype.Controller;
-        import org.springframework.web.bind.annotation.CrossOrigin;
-        import org.springframework.web.bind.annotation.RestController;
-        import org.springframework.web.util.HtmlUtils;
+import cgg.informatique.jfl.webSocket.Message;
+import cgg.informatique.jfl.webSocket.Reponse;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.HtmlUtils;
+
+import java.util.Map;
 
 @RestController
 public class ReponseControleur {

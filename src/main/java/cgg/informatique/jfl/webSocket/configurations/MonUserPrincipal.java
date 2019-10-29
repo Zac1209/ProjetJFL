@@ -37,7 +37,6 @@ public class MonUserPrincipal implements UserDetails {
     public String toString() {
         return "Compte{" +
                 "username='" + compte.getUsername() + '\'' +
-                ", fullname='" + compte.getFullname() + '\'' +
                 ", password='" + compte.getPassword() + '\'' +
                 ", role='" + compte.getRole() + '\'' +
                 '}';
