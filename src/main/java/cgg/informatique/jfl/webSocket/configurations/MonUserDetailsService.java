@@ -23,7 +23,7 @@ public class MonUserDetailsService  implements UserDetailsService {
         {
             //Mot de passe anonyme est JaimeLesPatates!!!
             c = new Compte("anonyme", "anonyme",
-                    "$2a$10$v3EXvAFWCsyUNWmKaw6uI.TanoXeQ9h0zq4mxurfdSow.dvCvOovO", "");
+                    "$2a$10$v3EXvAFWCsyUNWmKaw6uI.TanoXeQ9h0zq4mxurfdSow.dvCvOovO");
         }
         return new MonUserPrincipal(c);
     }

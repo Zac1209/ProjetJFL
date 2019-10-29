@@ -1,6 +1,7 @@
 package cgg.informatique.jfl.webSocket.configurations;
 
 import cgg.informatique.jfl.webSocket.entite.Compte;
+import cgg.informatique.jfl.webSocket.entite.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,9 +13,9 @@ public class MonUserPrincipal implements UserDetails {
         if (compte != null)
             this.compte = compte;
         else
-            this.compte = new Compte("","","","");
+            this.compte = new Compte();
     }
-    public String getRole() { return compte.getRole();}
+    public Role getRole() { return compte.getRole();}
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return compte.getAuthorities();

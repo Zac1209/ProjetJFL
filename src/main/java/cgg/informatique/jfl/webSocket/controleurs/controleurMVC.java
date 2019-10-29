@@ -23,11 +23,15 @@ public class controleurMVC {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println(auth.getName());
         String courriel = auth.getName();
-        Optional<Compte> compte = compteDao.findById(courriel);
+        //Optional<Compte> compte = compteDao.findById(courriel);
 
         model.addAttribute("nom", "test123");
 
         return "dojo";
+    }
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login(Map<String, Object> model) {
+        return "login";
     }
     @RequestMapping(value = "/dojo", method = RequestMethod.GET)
     public String dojo(Map<String, Object> model) {

@@ -2,6 +2,7 @@ package cgg.informatique.jfl.webSocket;
 
 import cgg.informatique.jfl.webSocket.configurations.MonStompSessionHandler;
 import cgg.informatique.jfl.webSocket.configurations.WebSocketConfig;
+import cgg.informatique.jfl.webSocket.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,6 +25,18 @@ import java.util.Scanner;
 
 @SpringBootApplication
 public class WebSocketApplication implements CommandLineRunner {
+	@Autowired
+	private AvatarDao avatarDao;
+	@Autowired
+	private CombatDao combatDao;
+	@Autowired
+	private CompteDao compteDao;
+	@Autowired
+	private ExamenDao examenDao;
+	@Autowired
+	private GroupeDao groupeDao;
+	@Autowired
+	private RoleDao roleDao;
 	public static void main(String[] args) {
 		SpringApplication.run(WebSocketApplication.class, args);
 	}
