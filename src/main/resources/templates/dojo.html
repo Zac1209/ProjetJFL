@@ -4,6 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Dojo</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+
+    <script src="/app.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script>
+        connexion();
+    </script>
 </head>
 <body>
 <div>
@@ -53,9 +63,22 @@
     <br />
     <input placeholder="Message">
     <br />
-    <button>Envoyer message privé</button>
+    <button id="envoyer">Envoyer message privé</button>
     <br />
     <button sec:authorize="hasAuthority('ANCIEN')">Envoyer message public</button>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table id="conversation" class="table table-striped">
+            <thead>
+            <tr>
+                <th>Réponses</th>
+            </tr>
+            </thead>
+            <tbody id="reponses">
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>
