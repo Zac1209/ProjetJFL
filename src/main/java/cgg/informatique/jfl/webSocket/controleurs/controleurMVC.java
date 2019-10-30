@@ -25,13 +25,16 @@ public class controleurMVC {
         String courriel = auth.getName();
         //Optional<Compte> compte = compteDao.findById(courriel);
 
-        model.addAttribute("nom", "test123");
 
         return "dojo";
     }
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Map<String, Object> model) {
         return "login";
+    }
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public String index(Map<String, Object> model) {
+        return "index";
     }
     @RequestMapping(value = "/dojo", method = RequestMethod.GET)
     public String dojo(Map<String, Object> model) {

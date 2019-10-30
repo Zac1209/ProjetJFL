@@ -13,7 +13,7 @@
                 AVATAR
             </td>
             <td>
-                <span th:text="${nom}"/>visiteur, aucun role
+                <span sec:authentication="name" />visiteur, aucun role
             </td>
         </tr>
     </table>
