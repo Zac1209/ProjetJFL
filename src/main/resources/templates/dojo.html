@@ -1,18 +1,21 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Dojo</title>
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/main.css" rel="stylesheet">
 
-    <script src="/app.js"></script>
-    <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/app.js"></script>
+
     <script>
         connexion();
+
     </script>
 </head>
 <body>
@@ -20,10 +23,10 @@
     <table>
         <tr>
             <td>
-                AVATAR
+                <img id="avatar" th:src="${avatar}" height="100"/>
             </td>
             <td>
-                <span sec:authentication="name" />visiteur, aucun role
+                <span sec:authentication="name" id="userID"/>visiteur, aucun role
             </td>
         </tr>
     </table>
@@ -61,7 +64,8 @@
 <div sec:authorize="isAuthenticated()">
     Votre message:
     <br />
-    <input placeholder="Message">
+    <input placeholder="Message" id="texte">
+    <input type="text" id="de" VALUE="test" />
     <br />
     <button id="envoyer">Envoyer message privé</button>
     <br />

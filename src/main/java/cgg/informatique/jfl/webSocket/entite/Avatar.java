@@ -17,11 +17,10 @@ public class Avatar {
     @OneToOne(mappedBy = "avatar")
     private Compte compte = null;
 
-    public Avatar(Integer id, String nom, String avatar, Compte compte) {
+    public Avatar(Integer id, String nom, String avatar) {
         this.id = id;
         this.nom = nom;
         this.avatar = avatar;
-        this.compte = compte;
     }
 
     public Avatar() {

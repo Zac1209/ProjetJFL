@@ -111,10 +111,11 @@ public class Compte implements UserDetails {
         this.evalues = evalues;
     }
 
-    public Compte(String username, String fullname, String password) {
+    public Compte(String username, String fullname, String password, Avatar avatar) {
         this.username = username;
         this.fullname = fullname;
         this.password = password;
+        this.avatar = avatar;
     }
 
     public Compte() {

@@ -93,18 +93,15 @@ function deConnexion() {
 
 function envoyerMessage() {
     var creation = Date.now();
-    var de = $("#de").val()
+    var de = $("#avatar").attr('src');
 
     stompClient.send("/app/message", {}, JSON.stringify({'texte': $("#texte").val() , 'creation': creation , 'de' : de, 'avatar': avatar }));
 }
 
 function afficherReponse(message) {
 
-    $("#reponses").append("<tr>"    + "<td><img width=100 height=75 src='" +  message.avatar    + "'/></td>" +
-                                     "<td>Id:" + message.id    + "</td>" +
-                                     "<td>De:" + message.de    + "</td>" +
-                                     "<td>Texte:" + message.texte + "</td>" +
-                                     "<td>Delta en millisecondes:" + message.delta + "</td>" +
+    $("#reponses").append("<tr>"    + "<td><img width=100 height=75 src='" +  message.de    + "'/></td>" +
+                                     "<td>Privée:" + message.texte + "</td>" +
                                      "</tr>");
 }
 
