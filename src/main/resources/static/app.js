@@ -26,7 +26,8 @@ function setConnexion(connexion) {
     $("#reponses").html("");
 }
 
-function connexion() {
+function connexion(bool) {
+    deConnexion();
     var socket = new SockJS('/webSocket');
     stompClient = Stomp.over(socket);
 
@@ -57,32 +58,46 @@ function connexion() {
                    afficherReponse( message  );
              });
         });
-        stompClient.subscribe('/sujet/prive', function (reponse) {
-            var id = JSON.parse(reponse.body).id;
-            var de = JSON.parse(reponse.body).de;
-            var texte = JSON.parse(reponse.body).texte;
-            var avatar = JSON.parse(reponse.body).avatar;
-            var creation = JSON.parse(reponse.body).creation;
-            var status = JSON.parse(reponse.body).status;
+        if(bool == true) {
+            stompClient.subscribe('/sujet/prive', function (reponse) {
+                var id = JSON.parse(reponse.body).id;
+                var de = JSON.parse(reponse.body).de;
+                var texte = JSON.parse(reponse.body).texte;
+                var avatar = JSON.parse(reponse.body).avatar;
+                var creation = JSON.parse(reponse.body).creation;
+                var status = JSON.parse(reponse.body).status;
 
-            var delta = calculerDelta(creation);
-            calculerDeltaMinMax(delta);
-            afficherMinMaxDelta();
+                var delta = calculerDelta(creation);
+                calculerDeltaMinMax(delta);
+                afficherMinMaxDelta();
 
-            var message = {id : id, de: de, texte:texte, creation:creation, delta:delta, avatar:avatar, status:status};
-            nb = messages.push(message);
+                var message = {
+                    id: id,
+                    de: de,
+                    texte: texte,
+                    creation: creation,
+                    delta: delta,
+                    avatar: avatar,
+                    status: status
+                };
+                nb = messages.push(message);
 
-            //On ne garde que les messages les plus récents (10 derniers)
-            if (nb > 10)
-                messages = messages.slice(1, 11);
+                //On ne garde que les messages les plus récents (10 derniers)
+                if (nb > 10)
+                    messages = messages.slice(1, 11);
 
-            $("#reponses").empty();
-            messages.forEach(function(message) {
-                afficherReponse( message  );
+                $("#reponses").empty();
+                messages.forEach(function (message) {
+                    afficherReponse(message);
+                });
             });
-        });
+        }
     });
+
+
+
 }
+
 
 //calculerDelta calcule la différence de temps en millisecondes entre la création du message sur le serveur
 // et la réception par ce client. Typiquement, j'ai mesuré 10 millisecondes.

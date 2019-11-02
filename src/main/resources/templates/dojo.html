@@ -13,8 +13,14 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/app.js"></script>
 
-    <script>
-        connexion();
+    <script type="text/javascript" th:inline="javascript">
+        /*[# sec:authorize="isAuthenticated()"]*/
+        connexion(true);
+        /*[/]*/
+
+        /*[# sec:authorize="isAnonymous()"]*/
+        connexion(false);
+        /*[/]*/
 
     </script>
 </head>
@@ -30,7 +36,13 @@
             </td>
         </tr>
     </table>
-    <button onclick="location.href='login'">Ouvrir une session</button>
+    <button onclick="location.href='login'" sec:authorize="isAnonymous()">Ouvrir une session</button>
+    <div sec:authorize="isAuthenticated()">
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Fin de la session"/>
+        </form>
+    </div>
+
 </div>
 <hr />
 <div>
@@ -67,9 +79,9 @@
     <input placeholder="Message" id="texte">
     <input type="text" id="de" VALUE="test" />
     <br />
-    <button sec:authorize="hasAuthority('ANCIEN')" id="envoyerPrive">Envoyer message privé</button>
+    <button id="envoyerPrive">Envoyer message privé</button>
     <br />
-    <button id="envoyerPublic">Envoyer message public</button>
+    <button sec:authorize="hasAuthority('ANCIEN')" id="envoyerPublic">Envoyer message public</button>
 </div>
 <div class="row">
     <div class="col-md-12">
