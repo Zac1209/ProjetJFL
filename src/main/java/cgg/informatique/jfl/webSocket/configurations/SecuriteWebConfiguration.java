@@ -28,18 +28,23 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
                 //Activer le formulaire pour login
                 .formLogin()
                 .loginPage("/login")
-                .failureUrl("/login?error=true")
+                .failureUrl("/login?error=true").and().rememberMe()
+                .alwaysRemember(true)
+                .tokenValiditySeconds(30*5)
+                .rememberMeCookieName("mouni")
+                .key("somesecret")
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/publique")
+                .logoutSuccessUrl("/dojo")
                 //pour la console H2
                 .and()
                 .csrf()
                 .ignoringAntMatchers("/consoleBD/**").and()
                 .headers()
                 .frameOptions()
-                .sameOrigin();
+                .sameOrigin()
+                ;
 
     }
 
