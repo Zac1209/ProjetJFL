@@ -30,22 +30,22 @@ function connexion() {
     var socket = new SockJS('/webSocket');
     stompClient = Stomp.over(socket);
 
-
     stompClient.connect({}, function (frame) {
         setConnexion(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/sujet/reponse', function (reponse) {
+        stompClient.subscribe('/sujet/public', function (reponse) {
             var id = JSON.parse(reponse.body).id;
             var de = JSON.parse(reponse.body).de;
             var texte = JSON.parse(reponse.body).texte;
             var avatar = JSON.parse(reponse.body).avatar;
             var creation = JSON.parse(reponse.body).creation;
+            var status = JSON.parse(reponse.body).status;
 
             var delta = calculerDelta(creation);
             calculerDeltaMinMax(delta);
             afficherMinMaxDelta();
 
-            var message = {id : id, de: de, texte:texte, creation:creation, delta:delta, avatar:avatar};
+            var message = {id : id, de: de, texte:texte, creation:creation, delta:delta, avatar:avatar, status:status};
             nb = messages.push(message);
 
             //On ne garde que les messages les plus récents (10 derniers)
@@ -56,6 +56,30 @@ function connexion() {
             messages.forEach(function(message) {
                    afficherReponse( message  );
              });
+        });
+        stompClient.subscribe('/sujet/prive', function (reponse) {
+            var id = JSON.parse(reponse.body).id;
+            var de = JSON.parse(reponse.body).de;
+            var texte = JSON.parse(reponse.body).texte;
+            var avatar = JSON.parse(reponse.body).avatar;
+            var creation = JSON.parse(reponse.body).creation;
+            var status = JSON.parse(reponse.body).status;
+
+            var delta = calculerDelta(creation);
+            calculerDeltaMinMax(delta);
+            afficherMinMaxDelta();
+
+            var message = {id : id, de: de, texte:texte, creation:creation, delta:delta, avatar:avatar, status:status};
+            nb = messages.push(message);
+
+            //On ne garde que les messages les plus récents (10 derniers)
+            if (nb > 10)
+                messages = messages.slice(1, 11);
+
+            $("#reponses").empty();
+            messages.forEach(function(message) {
+                afficherReponse( message  );
+            });
         });
     });
 }
@@ -95,13 +119,22 @@ function envoyerMessage() {
     var creation = Date.now();
     var de = $("#avatar").attr('src');
 
-    stompClient.send("/app/message", {}, JSON.stringify({'texte': $("#texte").val() , 'creation': creation , 'de' : de, 'avatar': avatar }));
+    stompClient.send("/sujet/public", {}, JSON.stringify({'texte': $("#texte").val() , 'creation': creation , 'de' : de, 'avatar': avatar,'status':"public" }));
+}
+
+function envoyerMessagePrive() {
+    var creation = Date.now();
+    var de = $("#avatar").attr('src');
+
+    stompClient.send("/sujet/prive", {}, JSON.stringify({'texte': $("#texte").val(), 'creation': creation , 'de' : de, 'avatar': avatar,'status':"prive" }));
 }
 
 function afficherReponse(message) {
-
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    var date = new Date();
     $("#reponses").append("<tr>"    + "<td><img width=100 height=75 src='" +  message.de    + "'/></td>" +
-                                     "<td>Privée:" + message.texte + "</td>" +
+                                     "<td>" + date.toLocaleDateString('fr-FR',options) + " " + date.toLocaleTimeString() + "</td>" +
+                                     "<td>" + message.status + ": " + message.texte + "</td>" +
                                      "</tr>");
 }
 
@@ -117,72 +150,11 @@ $(function () {
     });
     $( "#connexion" ).click(function() { connexion(); });
     $( "#deConnexion" ).click(function() { deConnexion(); });
-    $( "#envoyer" ).click(function() { envoyerMessage(); });
+    $( "#envoyerPublic" ).click(function() { envoyerMessage(); });
+    $( "#envoyerPrive" ).click(function() { envoyerMessagePrive(); });
 });
 
 $(document).ready(function(){
-    $("#deConnexion").hide();
 
-    $('#btnImage').hide();
-    $('#uneVideo').hide();
-    $('#uneImage').show();
-
-
-    const btnVideo = document.querySelector('#btnVideo');
-    const btnImage = document.querySelector('#btnImage');
-    const uneImage = document.querySelector('#uneImage');
-    const uneVideo = document.querySelector('#uneVideo');
-    const unCanvas = document.querySelector('#unCanvas');
-
-    uneImage.src =  avatar;
-
-    btnVideo.onclick = function() {
-
-          $('#btnImage').show();
-          $('#btnVideo').hide();
-          $('#uneVideo').show();
-          $('#uneImage').hide();
-
-         // Camera résolution la plus proche de 200x150.
-         var constraints = { video: { width: 150, height: 200 } };
-
-         navigator.mediaDevices.getUserMedia(constraints)
-         .then(function(mediaStream) {
-
-           uneVideo.srcObject = mediaStream;
-           uneVideo.onloadedmetadata = function(e) {
-             uneVideo.play();
-           };
-         })
-         .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
-    }
-
-    btnImage.onclick = uneVideo.onclick = function() {
-
-      $('#btnImage').hide();
-      $('#btnVideo').show();
-      $('#uneVideo').hide();
-      $('#uneImage').show();
-
-      unCanvas.width =   100;
-      unCanvas.height =  75;
-
-      //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-      unCanvas.getContext('2d').drawImage(uneVideo, 0, 0,uneVideo.videoWidth,uneVideo.videoHeight ,0,0, 100,75 );
-      uneVideo.srcObject.stop();
-
-      image = unCanvas.toDataURL("image/jpeg");
-      avatar =  image;
-      uneImage.src =  avatar;
-
-
-    };
-
-    function gererReussite(stream) {
-      uneVideo.srcObject = stream;
-    }
-    function gererErreur(erreur) {
-      console.error('Erreur: ', erreur);
-    }
 });
 

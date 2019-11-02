@@ -38,6 +38,10 @@ public class Groupe {
         this.ceintures = ceintures;
     }
 
+    public Groupe(String groupe) {
+        this.groupe = groupe;
+    }
+
     public Groupe() {
     }
 

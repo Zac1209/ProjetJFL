@@ -24,6 +24,10 @@ public class Role {
         this.comptes = comptes;
     }
 
+    public Role(String role) {
+        this.role = role;
+    }
+
     public Role() {
     }
 

@@ -18,15 +18,15 @@
 
     </script>
 </head>
-<body>
+<body style="margin: 10px;">
 <div>
     <table>
         <tr>
             <td>
                 <img id="avatar" th:src="${avatar}" height="100"/>
             </td>
-            <td>
-                <span sec:authentication="name" id="userID"/>visiteur, aucun role
+            <td style="padding-left: 10px;">
+                <span th:text="${nom}" id="userID"/>, <span th:text="${role}" id="role"/>, ceinture <span th:text="${ceinture}" id="ceinture"/>
             </td>
         </tr>
     </table>
@@ -67,9 +67,9 @@
     <input placeholder="Message" id="texte">
     <input type="text" id="de" VALUE="test" />
     <br />
-    <button id="envoyer">Envoyer message privé</button>
+    <button sec:authorize="hasAuthority('ANCIEN')" id="envoyerPrive">Envoyer message privé</button>
     <br />
-    <button sec:authorize="hasAuthority('ANCIEN')">Envoyer message public</button>
+    <button id="envoyerPublic">Envoyer message public</button>
 </div>
 <div class="row">
     <div class="col-md-12">
