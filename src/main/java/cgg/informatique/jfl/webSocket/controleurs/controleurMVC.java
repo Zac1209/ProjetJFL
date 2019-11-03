@@ -20,7 +20,7 @@ import java.util.Optional;
 public class controleurMVC {
     @Autowired
     private CompteDao compteDao;
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = {"/","/dojo"}, method = RequestMethod.GET)
     public String racine(Model model) {
         Compte karateka = new Compte();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -57,16 +57,23 @@ public class controleurMVC {
     public String index(Map<String, Object> model) {
         return "index";
     }
-    @RequestMapping(value = "/dojo", method = RequestMethod.GET)
-    public String dojo(Map<String, Object> model) {
-        return "dojo";
-    }
     @RequestMapping(value = "/notreEcole", method = RequestMethod.GET)
     public String ecole(Map<String, Object> model) {
         return "notreEcole";
     }
     @RequestMapping(value = "/kumite", method = RequestMethod.GET)
-    public String kumite(Map<String, Object> model) {
+    public String kumite(Model model) {
+        Compte karateka = new Compte();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String courriel = auth.getName();
+        Optional<Compte> compte = compteDao.findById(courriel);
+        Compte c = compte.get();
+
+
+        model.addAttribute("avatar",c.getAvatar().getAvatar());
+        model.addAttribute("nom",c.getFullname());
+        model.addAttribute("role",c.getRole().getRole());
+        model.addAttribute("ceinture",c.getGroupe().getGroupe());
         return "kumite";
     }
     @RequestMapping(value = "/passageGrade", method = RequestMethod.GET)

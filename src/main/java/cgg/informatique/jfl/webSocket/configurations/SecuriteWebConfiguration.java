@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Configuration
 @EnableWebSecurity
@@ -28,11 +30,14 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
                 //Activer le formulaire pour login
                 .formLogin()
                 .loginPage("/login")
-                .failureUrl("/login?error=true").and().rememberMe()
+                .failureUrl("/login?error=true")
+                .and()
+                .rememberMe()
                 .alwaysRemember(true)
                 .tokenValiditySeconds(30*5)
                 .rememberMeCookieName("mouni")
                 .key("somesecret")
+                .userDetailsService(monUserDetailsService)
                 .and()
                 .logout()
                 .logoutUrl("/logout")
@@ -59,6 +64,14 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
         authProvider.setUserDetailsService(monUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+
+    @Bean
+    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(true);
+        firewall.setAllowSemicolon(true);
+        return firewall;
     }
 
     @Bean
