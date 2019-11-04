@@ -16,6 +16,7 @@ import java.util.Map;
 @RestController
 public class ReponseControleur {
     ArrayList<String> spectateurs = new ArrayList<>();
+    ArrayList<String> combattants = new ArrayList<>();
     static long id = 1;
 
     @CrossOrigin()
@@ -29,6 +30,12 @@ public class ReponseControleur {
     @MessageMapping("/saveSpectateur")
     public void racine(@RequestBody String name) {
         spectateurs.add(name);
+    }
+
+    @CrossOrigin()
+    @MessageMapping("/saveCombattant")
+    public void saveCombattant(@RequestBody String name) {
+        combattants.add(name);
     }
 
 }
