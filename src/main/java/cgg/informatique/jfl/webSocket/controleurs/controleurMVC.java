@@ -49,10 +49,6 @@ public class controleurMVC {
     public String login(Map<String, Object> model) {
         return "login";
     }
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logout(Map<String, Object> model) {
-        return "dojo";
-    }
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public String index(Map<String, Object> model) {
         return "index";

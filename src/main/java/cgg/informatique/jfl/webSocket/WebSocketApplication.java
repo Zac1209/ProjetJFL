@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @SpringBootApplication
-public class WebSocketApplication implements CommandLineRunner {
+public class WebSocketApplication  {
 	@Autowired
 	private AvatarDao avatarDao;
 	@Autowired
@@ -43,7 +43,7 @@ public class WebSocketApplication implements CommandLineRunner {
 	@Autowired
 	private WebSocketConfig webSocket;
 
-	@Override
+/*	@Override
 	public void run(String... args) throws Exception {
 // Ce laboratoire est basé sur les exemples suivants:
 // https://spring.io/guides/gs/messaging-stomp-websocket/
@@ -103,6 +103,6 @@ public class WebSocketApplication implements CommandLineRunner {
 
 		}*/
 
-	}
+//	}
 
 }

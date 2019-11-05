@@ -473,9 +473,7 @@ function afficherMinMaxDelta()
 }
 
 $(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
+
     $( "#connexion" ).click(function() { connexion(); });
     $( "#deConnexion" ).click(function() { deConnexion(); });
     $( "#envoyerPublic" ).click(function() { envoyerMessage(); });
