@@ -43,6 +43,7 @@ public class controleurMVC {
         model.addAttribute("role",c.getRole().getRole());
         model.addAttribute("ceinture",c.getGroupe().getGroupe());
 
+
         return "dojo";
     }
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -70,6 +71,7 @@ public class controleurMVC {
         model.addAttribute("nom",c.getFullname());
         model.addAttribute("role",c.getRole().getRole());
         model.addAttribute("ceinture",c.getGroupe().getGroupe());
+        model.addAttribute("id",c.getUsername());
         return "kumite";
     }
     @RequestMapping(value = "/passageGrade", method = RequestMethod.GET)

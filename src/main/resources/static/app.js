@@ -112,7 +112,7 @@ function connexion(bool) {
 
 }
 
-function connexionKumite(valeur,ceinture) {
+function connexionKumite(valeur,ceinture, idCompte) {
     deConnexion();
     var socket = new SockJS('/webSocket');
     stompClient = Stomp.over(socket);
@@ -125,7 +125,27 @@ function connexionKumite(valeur,ceinture) {
 
 
             var message = {avatar:avatar};
-            spectateurs.push(message);
+
+
+            $.ajax(
+            {
+                url: '/saveSpectateur/' + idCompte,
+                type: 'GET',
+                contentType: 'application/json',
+                async: false,
+                success : function(id) {
+                    spectateurs.length = 0;
+                    id.forEach(function(element) {
+                    if(!spectateurs.includes(element))
+                      spectateurs.push(element);
+                    });
+                },
+                error: function (xhr, status, error)
+                {
+                alert("Erreur!");
+                }
+            });
+
 
             //Enlever le user de competiteur et arbitre
             if(competiteursSavedPosition.get(message.avatar) != null){
@@ -152,8 +172,25 @@ function connexionKumite(valeur,ceinture) {
 
 
             var message = {avatar:avatar};
-            competiteurs.push(message);
 
+            $.ajax(
+            {
+                url: '/saveCombattant/' + idCompte,
+                type: 'GET',
+                contentType: 'application/json',
+                async: false,
+                 success : function(id) {
+                    competiteurs.length = 0;
+                    id.forEach(function(element) {
+                    if(!competiteurs.includes(element))
+                      competiteurs.push(element);
+                    });
+                },
+                error: function (xhr, status, error)
+                {
+                alert("Erreur!");
+                }
+            });
             //Enlever le user de spectateur
             if(spectateursSavedPosition.get(message.avatar) != null){
                 $('#spec' + spectateursSavedPosition.get(message.avatar)).attr('value',"vide");
@@ -181,7 +218,17 @@ function connexionKumite(valeur,ceinture) {
 
             var message = {avatar:avatar};
             arbitres.push(message);
-
+            $.ajax(
+            {
+                url: '/saveArbitre/' + idCompte,
+                type: 'GET',
+                contentType: 'application/json',
+                async: false,
+                error: function (xhr, status, error)
+                {
+                alert("Erreur!");
+                }
+            });
             //Enlever le user de spectateur
             if(spectateursSavedPosition.get(message.avatar) != null){
                 $('#spec' + spectateursSavedPosition.get(message.avatar)).attr('value',"vide");
@@ -389,8 +436,8 @@ function afficherSpectateurs() {
     clearSpecComp(true);
     for(var i =1;i<=spectateurs.length;i++){
         if($('#spec' + i).attr('value') == "vide") {
-            spectateursSavedPosition.set(spectateurs[i-1].avatar,i);
-            $('#spec' + i).attr('src', spectateurs[i-1].avatar);
+            spectateursSavedPosition.set(spectateurs[i-1],i);
+            $('#spec' + i).attr('src', spectateurs[i-1]);
             $('#spec' + i).attr('value',"avatar");
         }
     }
@@ -400,8 +447,8 @@ function afficherCompetiteurs() {
     clearSpecComp(false);
     for(var i =1;i<=competiteurs.length;i++){
         if($('#comp' + i).attr('value') == "vide") {
-            competiteursSavedPosition.set(competiteurs[i-1].avatar,i);
-            $('#comp' + i).attr('src', competiteurs[i-1].avatar);
+            competiteursSavedPosition.set(competiteurs[i-1],i);
+            $('#comp' + i).attr('src', competiteurs[i-1]);
             $('#comp' + i).attr('value',"avatar");
         }
     }
