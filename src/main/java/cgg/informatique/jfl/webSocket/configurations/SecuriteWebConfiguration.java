@@ -44,11 +44,7 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/dojo")
                 //pour la console H2
                 .and()
-                .csrf()
-                .ignoringAntMatchers("/consoleBD/**").and()
-                .headers()
-                .frameOptions()
-                .sameOrigin()
+                .csrf().disable()
                 ;
 
     }
@@ -66,13 +62,6 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
         return authProvider;
     }
 
-    @Bean
-    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
-        StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowUrlEncodedSlash(true);
-        firewall.setAllowSemicolon(true);
-        return firewall;
-    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {

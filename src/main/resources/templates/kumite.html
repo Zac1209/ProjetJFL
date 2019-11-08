@@ -13,13 +13,11 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/app.js"></script>
     <script th:inline="javascript">
-
             /*<![CDATA[*/
             var message = /*[[${avatar}]]*/ 'default';
             var ceinture = /*[[${ceinture}]]*/ 'default';
             var id = /*[[${id}]]*/ 'default';
             connexionKumite(message,ceinture,id);
-
 
             /*]]>*/
 
@@ -35,11 +33,12 @@
         <span th:text="${nom}" id="userID"/>
         <br />
         Ceinture <span th:text="${ceinture}" id="ceinture"/>
+        <input id="hiddenID" th:value="${id}" hidden/>
         <fieldset id="group1">
-            <input type="radio" value="Spectateur" onchange="envoyerSpectateur(document.getElementById('avatar').src)" name="group1" checked="checked"/> Spectateur
-            <input type="radio" value="Competiteur" onchange="envoyerCompetiteur(document.getElementById('avatar').src)" name="group1" /> Competiteur
+            <input type="radio" value="Spectateur" onchange="envoyerSpectateur(document.getElementById('avatar').src,document.getElementById('hiddenID').value)" name="group1" checked="checked"/> Spectateur
+            <input type="radio" value="Competiteur" onchange="envoyerCompetiteur(document.getElementById('avatar').src,document.getElementById('hiddenID').value)" name="group1" /> Competiteur
             <br />
-            <input type="checkbox" value="Je veux être un arbitre" name="group1" onchange="envoyerArbitre(document.getElementById('avatar').src)"/> Je veux être un arbitre
+            <input type="checkbox" value="Je veux être un arbitre" name="group1" onchange="envoyerArbitre(document.getElementById('avatar').src,,document.getElementById('hiddenID').value)"/> Je veux être un arbitre
         </fieldset>
 
     </div>
