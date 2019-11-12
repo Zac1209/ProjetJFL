@@ -35,8 +35,7 @@ public class Combat {
     int pointsBlanc;
     int pointsRouge;
 
-    public Combat(Integer id, Long date, Compte arbitre, Compte rouge, Compte blanc, Groupe ceintureRouge, Groupe ceintureBlanc, int creditsArbitre, int pointsBlanc, int pointsRouge) {
-        this.id = id;
+    public Combat(Long date, Compte arbitre, Compte rouge, Compte blanc, Groupe ceintureRouge, Groupe ceintureBlanc, int creditsArbitre, int pointsBlanc, int pointsRouge) {
         this.date = date;
         this.arbitre = arbitre;
         this.rouge = rouge;

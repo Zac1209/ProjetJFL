@@ -4,7 +4,9 @@ package cgg.informatique.jfl.webSocket.controleurs;
 import cgg.informatique.jfl.webSocket.Message;
 import cgg.informatique.jfl.webSocket.Reponse;
 import cgg.informatique.jfl.webSocket.WebSocketApplication;
+import cgg.informatique.jfl.webSocket.dao.CombatDao;
 import cgg.informatique.jfl.webSocket.dao.CompteDao;
+import cgg.informatique.jfl.webSocket.entite.Combat;
 import cgg.informatique.jfl.webSocket.entite.Compte;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -38,11 +40,15 @@ public class ReponseControleur {
     String arbitreTemp = "";
     int arbitreActuelCount = 0;
     HashMap<String,String> resultCombat = new HashMap<>();//Key = action faite, value = avatar
+    Compte combattantDroit;
+    Compte combattantGauche;
 
     static long id = 1;
     Thread timer;
     @Autowired
     CompteDao compteDao;
+    @Autowired
+    CombatDao combatDao;
 
     @CrossOrigin()
     @MessageMapping("/message")
@@ -112,8 +118,8 @@ public class ReponseControleur {
                                              @PathVariable String combGaucheID,
                                              @PathVariable String combGauchePos) {
 
-        Compte combattantDroit = compteDao.findById(combDroitID).get();
-        Compte combattantGauche = compteDao.findById(combGaucheID).get();
+        combattantDroit = compteDao.findById(combDroitID).get();
+        combattantGauche = compteDao.findById(combGaucheID).get();
         competiteurs.remove(combattantDroit.getAvatar().getAvatar());
         competiteurs.remove(combattantGauche.getAvatar().getAvatar());
         positionCombattant.put(combattantDroit.getAvatar().getAvatar(),combDroitPos);
@@ -209,6 +215,8 @@ public class ReponseControleur {
                             Thread.sleep(10000);
                             positionCombattant = new HashMap<>();
                             resultCombat = new HashMap<>();
+                            combattantDroit = null;
+                            combattantGauche = null;
                             if(!arbitreTemp.equals("")){
                                 arbitreTemp = "";
                             }{
@@ -223,6 +231,25 @@ public class ReponseControleur {
                 }).start();
 
             }
+            int pointsBlanc = 0;
+            int pointsRouge = 0;
+            if(gagnantPosition.equals("egal")){
+                pointsBlanc = 5;
+                pointsRouge = 5;
+            } else if (gagnantPosition.equals("5")){
+                pointsBlanc = 10;
+            }
+            else
+                pointsRouge = 10;
+
+            Combat combat = new Combat(System.currentTimeMillis(),
+                    compteDao.findById(getCompteByAvatar(arbitreActuel)).get(),
+                    combattantDroit,
+                    combattantGauche,
+                    combattantDroit.getGroupe(),
+                    combattantGauche.getGroupe(),
+                    0,pointsBlanc,pointsRouge);
+            combatDao.save(combat);
         }
 
         return gagnantPosition;//Retourse l'endroit où mettre le drapeau ou égal
@@ -237,6 +264,21 @@ public class ReponseControleur {
             arbitreTemp = arbitreActuel;
         }
         return returnString;
+    }
+
+    @RequestMapping("/exit/{id}")
+    public void exit(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        if(spectateurs.contains(compte.getAvatar().getAvatar()))
+            spectateurs.remove(compte.getAvatar().getAvatar());
+        if(competiteurs.contains(compte.getAvatar().getAvatar()))
+            competiteurs.remove(compte.getAvatar().getAvatar());
+        if(arbitres.contains(compte.getAvatar().getAvatar())) {
+            arbitres.remove(compte.getAvatar().getAvatar());
+            if(arbitreActuel.equals(compte.getAvatar().getAvatar()))
+                arbitreActuel = "";
+        }
+        WebSocketApplication.session.send("/sujet/positionUpdate", new Message());
     }
 
     public static String getJSONFromMap(Map<String, String> inputMap) {

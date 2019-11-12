@@ -45,6 +45,7 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
                 //pour la console H2
                 .and()
                 .csrf().disable()
+                .headers().frameOptions().disable()
                 ;
 
     }
