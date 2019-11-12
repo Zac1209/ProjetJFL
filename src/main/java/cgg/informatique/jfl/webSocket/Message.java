@@ -8,7 +8,31 @@ public class Message {
     private String de;
     private String texte;
     private Long   creation;
-    private String avatar  = new String();;
+    private String avatar  = new String();
+    private String position = new String();
+    private String resultat = new String();
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getResultat() {
+        return resultat;
+    }
+
+    public void setResultat(String resultat) {
+        this.resultat = resultat;
+    }
+
+    public Message(String avatar, String position, String resultat) {
+        this.avatar = avatar;
+        this.position = position;
+        this.resultat = resultat;
+    }
 
     public String getAvatar() {
         return avatar;
