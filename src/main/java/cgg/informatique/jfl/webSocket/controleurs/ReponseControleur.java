@@ -42,6 +42,7 @@ public class ReponseControleur {
     HashMap<String,String> resultCombat = new HashMap<>();//Key = action faite, value = avatar
     Compte combattantDroit;
     Compte combattantGauche;
+    boolean arbitreAQuitter = false;
 
     static long id = 1;
     Thread timer;
@@ -130,7 +131,7 @@ public class ReponseControleur {
             timer = new Thread(new Runnable() {
                 public void run(){
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(8000);
                         if(resultCombat.size() != 2){
                             String positionDrapeauGagnant = "";
                             if(resultCombat.size() == 0)
@@ -180,7 +181,7 @@ public class ReponseControleur {
         String gagnantPosition = "";
         Compte combattant = compteDao.findById(combattantID).get();
         resultCombat.put(result,combattant.getAvatar().getAvatar());
-        if(resultCombat.size() == 2){//Si on a 2 résultat, calculer le gagnant.
+        if(resultCombat.size() == 2){ //Si on a 2 résultat, calculer le gagnant.
             ArrayList<String> resultList = new ArrayList<>();
             for ( String key : resultCombat.keySet() ) {
                 resultList.add(key);
@@ -209,47 +210,57 @@ public class ReponseControleur {
                     gagnantPosition = "5";
                 else
                     gagnantPosition = "7";
-                new Thread(new Runnable() {
-                    public void run(){
-                        try {
-                            Thread.sleep(10000);
-                            positionCombattant = new HashMap<>();
-                            resultCombat = new HashMap<>();
-                            combattantDroit = null;
-                            combattantGauche = null;
-                            if(!arbitreTemp.equals("")){
-                                arbitreTemp = "";
-                            }{
-                                arbitreActuel = "";
-                            }
-                            WebSocketApplication.session.send("/sujet/resetCombat", new Message());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
 
-                    }
-                }).start();
 
             }
             int pointsBlanc = 0;
             int pointsRouge = 0;
-            if(gagnantPosition.equals("egal")){
-                pointsBlanc = 5;
-                pointsRouge = 5;
-            } else if (gagnantPosition.equals("5")){
-                pointsBlanc = 10;
+            int ceintureAdverse = 0;
+            int ceintureGagnant = 0;
+            if(gagnantPosition.equals("egal")){//blanc est gauche et rouge droit
+                pointsBlanc = calculerPoints(combattantGauche.getGroupe().getId(),combattantDroit.getGroupe().getId()) / 2;
+                pointsRouge = calculerPoints(combattantDroit.getGroupe().getId(),combattantGauche.getGroupe().getId()) / 2;
+            } else if (gagnantPosition.equals("5")){//Citoire blanc
+                ceintureAdverse = combattantDroit.getGroupe().getId();
+                ceintureGagnant = combattantGauche.getGroupe().getId();
+                pointsBlanc = calculerPoints(ceintureGagnant,ceintureAdverse);
             }
-            else
-                pointsRouge = 10;
+            else {
+                ceintureAdverse = combattantGauche.getGroupe().getId();
+                ceintureGagnant = combattantDroit.getGroupe().getId();
+                pointsRouge = calculerPoints(ceintureGagnant,ceintureAdverse);
+            }
 
+            int creditArbitre = arbitreAQuitter ? -5 : 1;
             Combat combat = new Combat(System.currentTimeMillis(),
                     compteDao.findById(getCompteByAvatar(arbitreActuel)).get(),
                     combattantDroit,
                     combattantGauche,
                     combattantDroit.getGroupe(),
                     combattantGauche.getGroupe(),
-                    0,pointsBlanc,pointsRouge);
+                    creditArbitre,pointsBlanc,pointsRouge);
             combatDao.save(combat);
+            new Thread(new Runnable() {
+                public void run(){
+                    try {
+                        Thread.sleep(10000);
+                        positionCombattant = new HashMap<>();
+                        resultCombat = new HashMap<>();
+                        combattantDroit = null;
+                        combattantGauche = null;
+                        arbitreAQuitter = false;
+                        if(!arbitreTemp.equals("")){
+                            arbitreTemp = "";
+                        }{
+                            arbitreActuel = "";
+                        }
+                        WebSocketApplication.session.send("/sujet/resetCombat", new Message());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }).start();
         }
 
         return gagnantPosition;//Retourse l'endroit où mettre le drapeau ou égal
@@ -269,6 +280,9 @@ public class ReponseControleur {
     @RequestMapping("/exit/{id}")
     public void exit(@PathVariable String id) {
         Compte compte = compteDao.findById(id).get();
+        if(compte.getAvatar().getAvatar().equals(arbitreActuel)){
+            arbitreAQuitter = true;
+        }
         if(spectateurs.contains(compte.getAvatar().getAvatar()))
             spectateurs.remove(compte.getAvatar().getAvatar());
         if(competiteurs.contains(compte.getAvatar().getAvatar()))
@@ -296,5 +310,30 @@ public class ReponseControleur {
         }
         return outputResponse;
     }
+
+    public int calculerPoints(int ceintureGagnant, int ceinturePerdant){
+        int pointsGagne = 0;
+        if(ceinturePerdant == ceintureGagnant){
+            pointsGagne = 10;
+        }else if(ceinturePerdant > ceintureGagnant){
+            int differanceDeCeinture = ceinturePerdant - ceintureGagnant;
+            pointsGagne =
+                    differanceDeCeinture == 1 ? 12 :
+                            differanceDeCeinture == 2 ? 15 :
+                                    differanceDeCeinture == 3 ? 20 :
+                                            differanceDeCeinture == 4 ? 25 :
+                                                    differanceDeCeinture == 5 ? 30 : 50;
+        }else{
+            int differanceDeCeinture = ceintureGagnant - ceinturePerdant;
+            pointsGagne =
+                    differanceDeCeinture == 1 ? 9 :
+                            differanceDeCeinture == 2 ? 7 :
+                                    differanceDeCeinture == 3 ? 5 :
+                                            differanceDeCeinture == 4 ? 3 :
+                                                    differanceDeCeinture == 5 ? 2 : 1;
+        }
+        return pointsGagne;
+    }
+
 
 }
