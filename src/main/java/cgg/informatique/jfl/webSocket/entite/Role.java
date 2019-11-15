@@ -11,14 +11,14 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     private String role;
 
     @OneToMany(  mappedBy = "role" )
     private List<Compte> comptes  = new ArrayList<>();
 
-    public Role(Integer id, String role, List<Compte> comptes) {
+    public Role(String id, String role, List<Compte> comptes) {
         this.id = id;
         this.role = role;
         this.comptes = comptes;
@@ -35,11 +35,11 @@ public class Role {
         return serialVersionUID;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

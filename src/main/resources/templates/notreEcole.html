@@ -1,10 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
     <title>Notre école</title>
 </head>
 <body>
+<table border="1">
+    <tr><th>Notre vénérable</th></tr>
+    <tr th:each="entry : ${venerable}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.value.getFullname()}" />, ceinture <span  th:text="${entry.value.getGroupe().getGroupe()}" />, utilisateur <span  th:text="${entry.key}" /></td>
+
+    </tr>
+</table>
+<table border="1">
+    <tr>
+        <th>Liste de la honte</th>
+    </tr>
+    <tr th:each="entry : ${honte}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.value.getFullname()}" />, ceinture <span  th:text="${entry.value.getGroupe().getGroupe()}" />, utilisateur <span  th:text="${entry.key}" /></td>
+
+    </tr>
+</table>
+<table border="1">
+    <tr><th>Nos professeurs</th></tr>
+    <tr th:each="entry : ${seisei}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.value.getFullname()}" />, ceinture <span  th:text="${entry.value.getGroupe().getGroupe()}" />, utilisateur <span  th:text="${entry.key}" /></td>
+
+    </tr>
+</table>
+<table border="1">
+    <tr><th>Nos anciens</th></tr>
+    <tr th:each="entry : ${anciens}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.value.getFullname()}" />, ceinture <span  th:text="${entry.value.getGroupe().getGroupe()}" />, utilisateur <span  th:text="${entry.key}" /></td>
+
+    </tr>
+</table>
+<table border="1">
+    <tr><th>Nos nouveaux</th></tr>
+    <tr th:each="entry : ${nouveaux}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.value.getFullname()}" />, ceinture <span  th:text="${entry.value.getGroupe().getGroupe()}" />, utilisateur <span  th:text="${entry.key}" /></td>
+
+    </tr>
+</table>
 Cliquer <a href="dojo">ici pour retourner au dojo</a>
 </body>
 </html>

@@ -1,10 +1,8 @@
 package cgg.informatique.jfl.webSocket.controleurs;
 
+import cgg.informatique.jfl.webSocket.dao.CombatDao;
 import cgg.informatique.jfl.webSocket.dao.CompteDao;
-import cgg.informatique.jfl.webSocket.entite.Avatar;
-import cgg.informatique.jfl.webSocket.entite.Compte;
-import cgg.informatique.jfl.webSocket.entite.Groupe;
-import cgg.informatique.jfl.webSocket.entite.Role;
+import cgg.informatique.jfl.webSocket.entite.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,6 +20,8 @@ import java.util.Optional;
 public class controleurMVC {
     @Autowired
     private CompteDao compteDao;
+    @Autowired
+    private CombatDao combatDao;
     @RequestMapping(value = {"/","/dojo"}, method = RequestMethod.GET)
     public String racine(Model model) {
         Compte karateka = new Compte();
@@ -55,7 +57,38 @@ public class controleurMVC {
         return "index";
     }
     @RequestMapping(value = "/notreEcole", method = RequestMethod.GET)
-    public String ecole(Map<String, Object> model) {
+    public String ecole(Model model) {
+        HashMap<String,Compte> SectionHonte = new HashMap<>();
+        HashMap<String,Compte> professeurs = new HashMap<>();
+        HashMap<String,Compte> anciens = new HashMap<>();
+        HashMap<String,Compte> nouveaux = new HashMap<>();
+        HashMap<String,Compte> venerable = new HashMap<>();
+        HashMap<String,Compte> honte = new HashMap<>();
+        List<Compte> allCompte = compteDao.findAll();
+        for (Compte c:allCompte) {
+            if(combatDao.estHonteux(c.getUsername(),c.getGroupe().getId().toString()) == true)
+                honte.put(c.getUsername(),c);
+            switch(c.getRole().getRole()){
+                case "NOUVEAU":
+                    nouveaux.put(c.getUsername(),c);
+                    break;
+                case "ANCIEN":
+                    anciens.put(c.getUsername(),c);
+                    break;
+                case "SENSEI":
+                    professeurs.put(c.getUsername(),c);
+                    break;
+                case "VENERABLE":
+                    venerable.put(c.getUsername(),c);
+                    break;
+            }
+        }
+        model.addAttribute("nouveaux",nouveaux);
+        model.addAttribute("anciens",anciens);
+        model.addAttribute("honte",honte);
+        model.addAttribute("seisei",professeurs);
+        model.addAttribute("venerable",venerable);
+
         return "notreEcole";
     }
     @RequestMapping(value = "/kumite", method = RequestMethod.GET)
@@ -75,7 +108,36 @@ public class controleurMVC {
         return "kumite";
     }
     @RequestMapping(value = "/passageGrade", method = RequestMethod.GET)
-    public String passage(Map<String, Object> model) {
+    public String passage(Model model) {
+        List<Compte> listCompte = compteDao.findAll();
+        HashMap<String,Compte> qualifiee = new HashMap<>();
+        HashMap<String,Compte> honte = new HashMap<>();
+        HashMap<String,Compte> versAncien = new HashMap<>();
+        HashMap<String,Compte> ceintureNoir = new HashMap<>();
+        for (Compte c:listCompte) {
+            if(combatDao.getPointageActuel(c.getUsername(),c.getGroupe().getId().toString()) >= 100 && combatDao.getCredit(c.getUsername()) >= 10){
+                if(Integer.parseInt(c.getGroupe().getId()) < 7)
+                    qualifiee.put(c.getUsername(),c);
+            }
+            if(combatDao.estHonteux(c.getUsername(),c.getGroupe().getId().toString()) == true)
+                honte.put(c.getUsername(),c);
+            if(combatDao.getCredit(c.getUsername()) >= -3 && combatDao.getNombreCombat(c.getUsername()) >= 30 && c.getRole().getId().equals("1"))
+                versAncien.put(c.getUsername(),c);
+            if(Integer.parseInt(c.getGroupe().getId()) >=7 && !c.getRole().getId().equals("4"))
+                ceintureNoir.put(c.getUsername(),c);
+        }
+        Compte karateka = new Compte();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(auth.getName());
+        String courriel = auth.getName();
+        Optional<Compte> compte = compteDao.findById(courriel);
+        Compte c = compte.get();
+
+        model.addAttribute("qualifiee",qualifiee);
+        model.addAttribute("honte",honte);
+        model.addAttribute("ancien",versAncien);
+        model.addAttribute("ceintureNoire",ceintureNoir);
+        model.addAttribute("userLocal",c.getUsername());
         return "passageGrade";
     }
 }

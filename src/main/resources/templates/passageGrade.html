@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/passageGrade.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>Passage grade</title>
 </head>
 <body>
+<input id="userLocal" type="hidden" th:value="${userLocal}">
+<table>
+    <tr>
+        <td>
+            <table border="1">
+                <tr>
+                    <th>Membres admissibles</th>
+                </tr>
+                <tr th:each="entry : ${qualifiee}">
+                    <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+                    <td><span th:text="${entry.key}" /></td>
+                    <td>
+                        <button th:onclick="'passerExamen('+ '\'' + ${entry.key} + '\'' + ',' + 'document.getElementById(\'userLocal\').value' + ');window.location.reload(true); '" >Passer</button>
+                        <button th:onclick="'echecExamen('+ '\'' + ${entry.key} + '\'' + ',' + 'document.getElementById(\'userLocal\').value' + ');window.location.reload(true); '" >Échec</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table border="1">
+                <tr>
+                    <th>Liste de la honte</th>
+                </tr>
+                <tr th:each="entry : ${honte}">
+                    <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+                    <td><span  th:text="${entry.key}" /></td>
+
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<table border="1">
+    <tr>
+        <th>Passage au status d'ancien</th>
+    </tr>
+    <tr th:each="entry : ${ancien}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.key}" /></td>
+        <td><button th:onclick="'mettreAncien('+ '\'' + ${entry.key} + '\'' + ');window.location.reload(true);'" >Passer ancien</button></td>
+    </tr>
+</table>
+<table border="1">
+    <tr>
+        <th>Ceinture Noire</th>
+    </tr>
+    <tr th:each="entry : ${ceintureNoire}">
+        <td><img th:src="${entry.value.avatar.getAvatar()}"> </td>
+        <td><span  th:text="${entry.key}" /></td>
+        <td th:id="'btn' + ${entry.key}"></td>
+        <script>
+            /*<![CDATA[*/
+            var key = '[[${entry.key}]]';
+            var td = document.getElementById('btn' + key);
+            var btn = document.createElement('input');
+            btn.type = "button";
+            btn.id = '[[${entry.key}]]';
+
+            var roleID = '[[${entry.value.getRole().getId()}]]';
+            if(roleID == 3){
+                btn.value = "Enlever Sensei";
+                this.btn.onclick=function(){enleverSensei('[[${entry.key}]]');document.getElementById('[[${entry.key}]]').value = "Mettre Sensei";document.getElementById('[[${entry.key}]]').onclick=function(){mettreSensei('[[${entry.key}]]')};window.location.reload(true); };
+            }else{
+                btn.value = "Mettre Sensei";
+                this.btn.onclick=function(){mettreSensei('[[${entry.key}]]');document.getElementById('[[${entry.key}]]').value = "Enlever Sensei";document.getElementById('[[${entry.key}]]').onclick=function(){enleverSensei('[[${entry.key}]]')};window.location.reload(true); };
+            }
+            td.appendChild(btn);
+            /*]]>*/
+        </script>
+    </tr>
+</table>
 Cliquer <a href="dojo">ici pour retourner au dojo</a>
 </body>
 </html>

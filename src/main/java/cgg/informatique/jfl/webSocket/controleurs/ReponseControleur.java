@@ -4,10 +4,8 @@ package cgg.informatique.jfl.webSocket.controleurs;
 import cgg.informatique.jfl.webSocket.Message;
 import cgg.informatique.jfl.webSocket.Reponse;
 import cgg.informatique.jfl.webSocket.WebSocketApplication;
-import cgg.informatique.jfl.webSocket.dao.CombatDao;
-import cgg.informatique.jfl.webSocket.dao.CompteDao;
-import cgg.informatique.jfl.webSocket.entite.Combat;
-import cgg.informatique.jfl.webSocket.entite.Compte;
+import cgg.informatique.jfl.webSocket.dao.*;
+import cgg.informatique.jfl.webSocket.entite.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +48,12 @@ public class ReponseControleur {
     CompteDao compteDao;
     @Autowired
     CombatDao combatDao;
+    @Autowired
+    ExamenDao examenDao;
+    @Autowired
+    RoleDao roleDao;
+    @Autowired
+    GroupeDao groupeDao;
 
     @CrossOrigin()
     @MessageMapping("/message")
@@ -218,16 +222,16 @@ public class ReponseControleur {
             int ceintureAdverse = 0;
             int ceintureGagnant = 0;
             if(gagnantPosition.equals("egal")){//blanc est gauche et rouge droit
-                pointsBlanc = calculerPoints(combattantGauche.getGroupe().getId(),combattantDroit.getGroupe().getId()) / 2;
-                pointsRouge = calculerPoints(combattantDroit.getGroupe().getId(),combattantGauche.getGroupe().getId()) / 2;
+                pointsBlanc = calculerPoints(Integer.parseInt(combattantGauche.getGroupe().getId()),Integer.parseInt(combattantDroit.getGroupe().getId())) / 2;
+                pointsRouge = calculerPoints(Integer.parseInt(combattantDroit.getGroupe().getId()),Integer.parseInt(combattantGauche.getGroupe().getId())) / 2;
             } else if (gagnantPosition.equals("5")){//Citoire blanc
-                ceintureAdverse = combattantDroit.getGroupe().getId();
-                ceintureGagnant = combattantGauche.getGroupe().getId();
+                ceintureAdverse = Integer.parseInt(combattantDroit.getGroupe().getId());
+                ceintureGagnant = Integer.parseInt(combattantGauche.getGroupe().getId());
                 pointsBlanc = calculerPoints(ceintureGagnant,ceintureAdverse);
             }
             else {
-                ceintureAdverse = combattantGauche.getGroupe().getId();
-                ceintureGagnant = combattantDroit.getGroupe().getId();
+                ceintureAdverse = Integer.parseInt(combattantGauche.getGroupe().getId());
+                ceintureGagnant = Integer.parseInt(combattantDroit.getGroupe().getId());
                 pointsRouge = calculerPoints(ceintureGagnant,ceintureAdverse);
             }
 
@@ -294,6 +298,39 @@ public class ReponseControleur {
         }
         WebSocketApplication.session.send("/sujet/positionUpdate", new Message());
     }
+
+    @RequestMapping("/Exam/{id}/{evaluateur}/{result}")
+    public void Exam(@PathVariable String id,@PathVariable String evaluateur,@PathVariable boolean result) {
+        Compte compte = compteDao.findById(id).get();
+        Compte evaluateurCompte = compteDao.findById(evaluateur).get();
+        Examen exam = new Examen(System.currentTimeMillis(),result,compte.getGroupe(),evaluateurCompte,compte);
+        examenDao.saveAndFlush(exam);
+        int ceintureActuelle = Integer.parseInt(compte.getGroupe().getId());
+        if(ceintureActuelle < 7 && result == true){
+            int intNewCeinture = ceintureActuelle +1;
+            Groupe newCeinture = groupeDao.findById(String.valueOf(intNewCeinture)).get();
+            compte.setGroupe(newCeinture);
+            compteDao.saveAndFlush(compte);
+        }
+    }
+
+
+    @RequestMapping("/mettreAncien/{id}")
+    public void mettreAncien(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        Role ancien = roleDao.findById("2").get();
+        compte.setRole(ancien);
+        compteDao.save(compte);
+    }
+
+    @RequestMapping("/mettreSensei/{id}")
+    public void mettreSensei(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        Role ancien = roleDao.findById("3").get();
+        compte.setRole(ancien);
+        compteDao.save(compte);
+    }
+
 
     public static String getJSONFromMap(Map<String, String> inputMap) {
         Writer writer = new StringWriter();

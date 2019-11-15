@@ -23,9 +23,9 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         //permettre toutes les requêtes
         http.authorizeRequests()
-                .antMatchers("/","/dojo").permitAll()
-                .antMatchers("/admin/**", "/admin/", "/Mystere", "/Mystere/**").hasAuthority("ADMIN")
-                .antMatchers("/membre/**", "/membre/").authenticated()
+                .antMatchers("/","/dojo","/notreEcole").permitAll()
+                .antMatchers("/kumite").authenticated()
+                .antMatchers("/passageGrade").hasAnyAuthority("VENERABLE","SENSEI")
                 .and()
                 //Activer le formulaire pour login
                 .formLogin()
@@ -34,7 +34,7 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .rememberMe()
                 .alwaysRemember(true)
-                .tokenValiditySeconds(30*5)
+                .tokenValiditySeconds(30*20)
                 .rememberMeCookieName("mouni")
                 .key("somesecret")
                 .userDetailsService(monUserDetailsService)

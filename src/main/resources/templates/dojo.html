@@ -77,11 +77,10 @@
     Votre message:
     <br />
     <input placeholder="Message" id="texte">
-    <input type="text" id="de" VALUE="test" />
     <br />
     <button id="envoyerPrive">Envoyer message privé</button>
     <br />
-    <button sec:authorize="hasAuthority('ANCIEN')" id="envoyerPublic">Envoyer message public</button>
+    <button sec:authorize="hasAnyAuthority('ANCIEN','VENERABLE','SENSEI')" id="envoyerPublic">Envoyer message public</button>
 </div>
 <div class="row">
     <div class="col-md-12">

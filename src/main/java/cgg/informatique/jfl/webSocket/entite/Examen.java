@@ -24,8 +24,7 @@ public class Examen {
     @JoinColumn(name="evalue_id" )
     private Compte   evalue = new Compte();
 
-    public Examen(Integer id, Long date, Boolean aReussi, Groupe ceinture, Compte evaluateur, Compte evalue) {
-        this.id = id;
+    public Examen(Long date, Boolean aReussi, Groupe ceinture, Compte evaluateur, Compte evalue) {
         this.date = date;
         this.aReussi = aReussi;
         this.ceinture = ceinture;

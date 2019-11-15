@@ -13,7 +13,7 @@ public class Groupe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     private String groupe;
 
@@ -29,8 +29,7 @@ public class Groupe {
     @OneToMany( fetch = FetchType.LAZY, mappedBy = "ceinture" )
     private Set<Examen>  ceintures  = new HashSet<>();
 
-    public Groupe(Integer id, String groupe, List<Compte> comptes, Set<Combat> ceinturesBlancs, Set<Combat> ceinturesRouges, Set<Examen> ceintures) {
-        this.id = id;
+    public Groupe(String groupe, List<Compte> comptes, Set<Combat> ceinturesBlancs, Set<Combat> ceinturesRouges, Set<Examen> ceintures) {
         this.groupe = groupe;
         this.comptes = comptes;
         this.ceinturesBlancs = ceinturesBlancs;
@@ -49,11 +48,11 @@ public class Groupe {
         return serialVersionUID;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
