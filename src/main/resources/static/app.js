@@ -41,7 +41,7 @@ function setConnexion(connexion) {
 
 function connexion(bool) {
     deConnexion();
-    var socket = new SockJS('/webSocket');
+    var socket = new SockJS('http://192.168.50.54:8100/webSocket');
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
@@ -381,7 +381,7 @@ function updateCombat(){
 function calculerDelta(creation)
 {
     var maintenant = Date.now();
-    let delta = maintenant - creation;
+    //let delta = maintenant - creation;
     return delta;
 }
 
