@@ -381,7 +381,7 @@ function updateCombat(){
 function calculerDelta(creation)
 {
     var maintenant = Date.now();
-    //let delta = maintenant - creation;
+    let delta = maintenant - creation;
     return delta;
 }
 

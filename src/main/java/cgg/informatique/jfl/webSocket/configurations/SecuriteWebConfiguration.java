@@ -31,7 +31,7 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
         System.err.println("boum");
         http
                 //Modification pour REST
-                .csrf().disable()
+                .csrf().disable().headers().frameOptions().disable().and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()

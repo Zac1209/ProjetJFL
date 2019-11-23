@@ -140,6 +140,16 @@ public class ReponseControleur {
         return compte.getRole().getRole();
     }
 
+    @GetMapping("/isConnected")
+    public Boolean isConnected() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean binReturn = true;
+        if(auth.getName().equals("anonymousUser"))
+            binReturn = false;
+        return binReturn;
+    }
+
     @GetMapping("/getCeinture")
     public String getCeinture() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
