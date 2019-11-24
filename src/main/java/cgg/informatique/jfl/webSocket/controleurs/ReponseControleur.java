@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,16 +27,14 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class ReponseControleur {
     public static HashMap<String,String> listeDesConnexions = new HashMap<>();
     ArrayList<String> spectateurs = new ArrayList<>();
     ArrayList<String> competiteurs = new ArrayList<>();
+    StompSession session = WebSocketApplication.session;
     ArrayList<String> arbitres = new ArrayList<>();
     HashMap<String,String> positionCombattant = new HashMap<>();//Key = avatar, value = position
     String arbitreActuel = "";
@@ -78,6 +77,12 @@ public class ReponseControleur {
 
 
         return spectateurs;
+    }
+
+    @RequestMapping("/getAvatarById/{id}")
+    public String getAvatarById(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        return compte.getAvatar().getAvatar();
     }
 
     @RequestMapping("/saveCompetiteur/{id}")
@@ -189,6 +194,27 @@ public class ReponseControleur {
                     try {
                         Thread.sleep(8000);
                         if(resultCombat.size() != 2){
+                            new Thread(new Runnable() {
+                                public void run(){
+                                    try {
+                                        Thread.sleep(10000);
+                                        positionCombattant = new HashMap<>();
+                                        resultCombat = new HashMap<>();
+                                        combattantDroit = null;
+                                        combattantGauche = null;
+                                        arbitreAQuitter = false;
+                                        if(!arbitreTemp.equals("")){
+                                            arbitreTemp = "";
+                                        }{
+                                            arbitreActuel = "";
+                                        }
+                                        WebSocketApplication.session.send("/sujet/resetCombat", new Message());
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }).start();
                             String positionDrapeauGagnant = "";
                             if(resultCombat.size() == 0)
                                 positionDrapeauGagnant = "egal";
@@ -218,6 +244,73 @@ public class ReponseControleur {
     public String getCompteByAvatar(@RequestBody String test) {
         String avatar = compteDao.getCompteIdByAvatar(test);
         return avatar;
+    }
+
+    @GetMapping("/getNouveau")
+    public HashMap<String,String> getNouveau() {
+        HashMap<String,String> nouveaux = new HashMap<>();
+        List<Compte> allCompte = compteDao.findAll();
+        for (Compte c:allCompte) {
+            switch(c.getRole().getRole()){
+                case "NOUVEAU":
+                    nouveaux.put(c.getUsername(),c.getAvatar().getAvatar());
+                    break;
+            }
+        }
+        return nouveaux;
+    }
+
+    @GetMapping("/getAncien")
+    public HashMap<String,String> getAncien() {
+        HashMap<String,String> anciens = new HashMap<>();
+        List<Compte> allCompte = compteDao.findAll();
+        for (Compte c:allCompte) {
+            switch(c.getRole().getRole()){
+                case "ANCIEN":
+                    anciens.put(c.getUsername(),c.getAvatar().getAvatar());
+                    break;
+            }
+        }
+        return anciens;
+    }
+
+    @GetMapping("/getHonte")
+    public HashMap<String,String> getHonte() {
+        HashMap<String,String> honte = new HashMap<>();
+        List<Compte> allCompte = compteDao.findAll();
+        for (Compte c:allCompte) {
+            if (combatDao.estHonteux(c.getUsername(), c.getGroupe().getId().toString()) == true)
+                honte.put(c.getUsername(), c.getAvatar().getAvatar());
+        }
+        return honte;
+    }
+
+    @GetMapping("/getProf")
+    public HashMap<String,String> getProf() {
+        HashMap<String,String> professeurs = new HashMap<>();
+        List<Compte> allCompte = compteDao.findAll();
+        for (Compte c:allCompte) {
+            switch(c.getRole().getRole()){
+                case "SENSEI":
+                    professeurs.put(c.getUsername(),c.getAvatar().getAvatar());
+                    break;
+            }
+        }
+        return professeurs;
+    }
+
+    @GetMapping("/getVenerable")
+    public HashMap<String,String> getVenerable() {
+        HashMap<String,String> venerable = new HashMap<>();
+        List<Compte> allCompte = compteDao.findAll();
+        for (Compte c:allCompte) {
+            switch(c.getRole().getRole()){
+                case "VENERABLE":
+                    venerable.put(c.getUsername(),c.getAvatar().getAvatar());
+                    break;
+            }
+        }
+        return venerable;
     }
 
     @GetMapping("/getCombattant")
@@ -444,6 +537,5 @@ public class ReponseControleur {
         }
         return c;
     }
-
 
 }

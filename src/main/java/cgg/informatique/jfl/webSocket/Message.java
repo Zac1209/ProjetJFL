@@ -1,8 +1,6 @@
 package cgg.informatique.jfl.webSocket;
 
 
-import java.util.Date;
-
 public class Message {
 
     private String de;
@@ -11,6 +9,15 @@ public class Message {
     private String avatar  = new String();
     private String position = new String();
     private String resultat = new String();
+    private String idUser = new String();
+
+    public String getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
+    }
 
     public String getPosition() {
         return position;
@@ -33,6 +40,7 @@ public class Message {
         this.position = position;
         this.resultat = resultat;
     }
+
 
     public String getAvatar() {
         return avatar;
@@ -63,6 +71,11 @@ public class Message {
     public Message(String de, String texte) {
         this.de = de;
         this.texte = texte;
+    }
+
+    public Message(String valeur, String id, String rien,String rien2){
+        this.avatar = valeur;
+        this.idUser = id;
     }
 
     public Message(  String texte) {

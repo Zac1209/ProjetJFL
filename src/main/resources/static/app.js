@@ -120,9 +120,24 @@ function connexionKumite(valeur,ceinture, idCompte) {
         setConnexion(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/sujet/positionUpdate', function (reponse) {
-            var avatar = JSON.parse(reponse.body).avatar;
+            var idUser = JSON.parse(reponse.body).idUser;
+            var avatar;
+            if(idUser!="" &&idUser!=null) {
+                $.ajax(
+                    {
+                        url: '/getAvatarById/' + idUser,
+                        type: 'GET',
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (id) {
+                            avatar = id;
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Erreur!");
+                        }
+                    });
+            }
 
-            var message = {avatar:avatar};
             $.ajax(
                 {
                     url: '/getCompetiteurs',
@@ -179,18 +194,33 @@ function connexionKumite(valeur,ceinture, idCompte) {
                 });
 
             afficherEstrade();
-            if(avatar!=null) {
+            if(idUser!="" && idUser!=null) {
                 if (avatar == avatarLocal)
                     commencerCombat();
             }
         });
 
         stompClient.subscribe('/sujet/rei', function (reponse) {
-            var avatar = JSON.parse(reponse.body).avatar;
-            var message = {avatar:avatar};
+            var idUser = JSON.parse(reponse.body).idUser;
+            var avatar;
+            $.ajax(
+                {
+                    url: '/getAvatarById/'+idUser,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    async: false,
+                    success : function(id) {
+                        avatar=id;
+                    },
+                    error: function (xhr, status, error)
+                    {
+                        alert("Erreur!");
+                    }
+                });
 
             intCountRei++;
-            var position = combattantsSavedPosition.get(avatar);
+
+            var position = Object.keys(combattantsSavedPosition).find(key => combattantsSavedPosition[key] === avatar);
             $('#combatTxt' + position).text("Rei!");
             if(avatar == avatarLocal)
                 $("#btnAction").attr("disabled", true);
@@ -223,8 +253,22 @@ function connexionKumite(valeur,ceinture, idCompte) {
 
         });
         stompClient.subscribe('/sujet/hajime', function (reponse) {
-            var avatar = JSON.parse(reponse.body).avatar;
-            var message = {avatar:avatar};
+            var idUser = JSON.parse(reponse.body).idUser;
+            var avatar;
+            $.ajax(
+                {
+                    url: '/getAvatarById/'+idUser,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    async: false,
+                    success : function(id) {
+                        avatar=id;
+                    },
+                    error: function (xhr, status, error)
+                    {
+                        alert("Erreur!");
+                    }
+                });
 
             clearCombatText();
             $('#combatTxt6').text("Hajime!");//Afficher hajime pour 2 secondes
@@ -330,6 +374,7 @@ function connexionKumite(valeur,ceinture, idCompte) {
             envoyerCompetiteur(combattants[1],getCompteIdByAvatar(combattants[1]));
             combattants.length = 0;
             clearCombat();
+            intCountRei=0;
             clearCombatText();
         });
         envoyerSpectateur(valeur,idCompte);
@@ -470,11 +515,16 @@ function envoyerArbitre(valeur,id) {
 }
 
 function envoyerRei(valeur) {
-    stompClient.send("/sujet/rei", {}, JSON.stringify({'avatar': valeur}));
+    var userID;
+    userID = getCompteIdByAvatar(valeur);
+    stompClient.send("/sujet/rei", {}, JSON.stringify({'idUser': userID}));
 }
 
 function envoyerHajime(valeur) {
-    stompClient.send("/sujet/hajime", {}, JSON.stringify({'avatar': valeur}));
+    var userID;
+    userID = getCompteIdByAvatar(valeur);
+
+    stompClient.send("/sujet/hajime", {}, JSON.stringify({'idUser': userID}));
 }
 
 function envoyerResultCombat(valeur,result) {
