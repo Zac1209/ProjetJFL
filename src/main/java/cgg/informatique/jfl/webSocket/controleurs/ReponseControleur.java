@@ -163,6 +163,12 @@ public class ReponseControleur {
         return compte.getGroupe().getGroupe();
     }
 
+    @GetMapping("/getCeinture/{id}")
+    public String getCeinture(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        return compte.getGroupe().getGroupe();
+    }
+
     @GetMapping("/getCompetiteurs")
     public ArrayList<String> getComb() {
         return competiteurs;
@@ -389,6 +395,9 @@ public class ReponseControleur {
                     combattantGauche.getGroupe(),
                     creditArbitre,pointsBlanc,pointsRouge);
             combatDao.save(combat);
+            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantDroit.getUsername()+"\"}");
+            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantGauche.getUsername()+"\"}");
+
             new Thread(new Runnable() {
                 public void run(){
                     try {
@@ -456,6 +465,8 @@ public class ReponseControleur {
             Groupe newCeinture = groupeDao.findById(String.valueOf(intNewCeinture)).get();
             compte.setGroupe(newCeinture);
             compteDao.saveAndFlush(compte);
+            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+compte.getUsername()+"\"}");
+
         }
     }
 
@@ -465,6 +476,8 @@ public class ReponseControleur {
         Compte compte = compteDao.findById(id).get();
         Role ancien = roleDao.findById("2").get();
         compte.setRole(ancien);
+        WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+compte.getUsername()+"\"}");
+
         compteDao.save(compte);
     }
 
@@ -474,6 +487,8 @@ public class ReponseControleur {
         Role ancien = roleDao.findById("3").get();
         compte.setRole(ancien);
         compteDao.save(compte);
+        WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+compte.getUsername()+"\"}");
+
     }
     @PostMapping("/test")
     public void test() {
@@ -484,18 +499,37 @@ public class ReponseControleur {
 
     @RequestMapping("/getCredit/{id}")
     public int getCredit(@PathVariable String id) {
-        Compte compte = compteDao.findById(id).get();
-        int credit = combatDao.getCredit(compte.getUsername());
+        int credit = 0;
+        if(!id.equals("anonymousUser")){
+            Compte compte = compteDao.findById(id).get();
+            credit = combatDao.getCredit(compte.getUsername());
+        }
+
         return credit;
     }
 
     @RequestMapping("/getPoint/{id}")
     public int getPoint(@PathVariable String id) {
-        Compte compte = compteDao.findById(id).get();
-        int point = combatDao.getPointageActuel(compte.getUsername(),compte.getGroupe().getId());
+        int point = 0;
+        if(!id.equals("anonymousUser")){
+            Compte compte = compteDao.findById(id).get();
+            point = combatDao.getPointageActuel(compte.getUsername(),compte.getGroupe().getId());
+        }
+
         return point;
     }
 
+    @RequestMapping("/getUserList")
+    public HashMap<String,String> getUserList() {
+        HashMap<String,String> userList = new HashMap<>();
+        for (Compte c :
+                compteDao.findAll()) {
+            userList.put(c.getUsername(),c.getAvatar().getAvatar());
+        }
+
+
+        return userList;
+    }
 
     public static String getJSONFromMap(Map<String, String> inputMap) {
         Writer writer = new StringWriter();
