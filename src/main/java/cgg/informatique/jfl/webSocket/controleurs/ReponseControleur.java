@@ -206,6 +206,8 @@ public class ReponseControleur {
                                         Thread.sleep(10000);
                                         positionCombattant = new HashMap<>();
                                         resultCombat = new HashMap<>();
+                                        competiteurs.add(combattantGauche.getAvatar().getAvatar());
+                                        competiteurs.add(combattantDroit.getAvatar().getAvatar());
                                         combattantDroit = null;
                                         combattantGauche = null;
                                         arbitreAQuitter = false;
@@ -214,6 +216,7 @@ public class ReponseControleur {
                                         }{
                                             arbitreActuel = "";
                                         }
+
                                         WebSocketApplication.session.send("/sujet/resetCombat", new Message());
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
@@ -335,13 +338,16 @@ public class ReponseControleur {
                                  @PathVariable String result) {
         String gagnantPosition = "";
         Compte combattant = compteDao.findById(combattantID).get();
+
+        boolean binValide = resultCombat.size() == 1;
+
         resultCombat.put(result,combattant.getAvatar().getAvatar());
-        if(resultCombat.size() == 2){ //Si on a 2 résultat, calculer le gagnant.
+        if(binValide){ //Si on a 2 résultat, calculer le gagnant.
             ArrayList<String> resultList = new ArrayList<>();
             for ( String key : resultCombat.keySet() ) {
                 resultList.add(key);
             }
-            if(resultList.get(0).equals(resultList.get(1)))
+            if(resultCombat.size() == 1)
                 gagnantPosition = "egal";
             else{
                 if(resultList.get(0).equals("Roche")){
@@ -404,6 +410,8 @@ public class ReponseControleur {
                         Thread.sleep(10000);
                         positionCombattant = new HashMap<>();
                         resultCombat = new HashMap<>();
+                        competiteurs.add(combattantGauche.getAvatar().getAvatar());
+                        competiteurs.add(combattantDroit.getAvatar().getAvatar());
                         combattantDroit = null;
                         combattantGauche = null;
                         arbitreAQuitter = false;
@@ -412,6 +420,7 @@ public class ReponseControleur {
                         }{
                             arbitreActuel = "";
                         }
+
                         WebSocketApplication.session.send("/sujet/resetCombat", new Message());
                     } catch (InterruptedException e) {
                         e.printStackTrace();

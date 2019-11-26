@@ -224,7 +224,7 @@ function connexionKumite(valeur,ceinture, idCompte) {
             var position;
             var keyList = Array.from(combattantsSavedPosition.keys());
             for(var b in keyList){
-                if(a.get(keyList[b]) == avatar){
+                if(combattantsSavedPosition.get(keyList[b]) == avatar){
                     position = keyList[b];
                 }
             }
@@ -377,8 +377,8 @@ function connexionKumite(valeur,ceinture, idCompte) {
                 arbitres = new Array();
             }else
                 arbitreTemp = "";
-            envoyerCompetiteur(combattants[0],getCompteIdByAvatar(combattants[0]));
-            envoyerCompetiteur(combattants[1],getCompteIdByAvatar(combattants[1]));
+            //envoyerCompetiteur(combattants[0],getCompteIdByAvatar(combattants[0]));
+            //envoyerCompetiteur(combattants[1],getCompteIdByAvatar(combattants[1]));
             combattants.length = 0;
             clearCombat();
             intCountRei=0;
