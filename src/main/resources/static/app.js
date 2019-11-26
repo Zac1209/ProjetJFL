@@ -220,7 +220,14 @@ function connexionKumite(valeur,ceinture, idCompte) {
 
             intCountRei++;
 
-            var position = Object.keys(combattantsSavedPosition).find(key => combattantsSavedPosition[key] === avatar);
+
+            var position;
+            var keyList = Array.from(combattantsSavedPosition.keys());
+            for(var b in keyList){
+                if(a.get(keyList[b]) == avatar){
+                    position = keyList[b];
+                }
+            }
             $('#combatTxt' + position).text("Rei!");
             if(avatar == avatarLocal)
                 $("#btnAction").attr("disabled", true);

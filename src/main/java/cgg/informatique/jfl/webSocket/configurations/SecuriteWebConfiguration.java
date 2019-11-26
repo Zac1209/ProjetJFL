@@ -28,7 +28,6 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //https://www.baeldung.com/securing-a-restful-web-service-with-spring-security
-        System.err.println("boum");
         http
                 //Modification pour REST
                 .csrf().disable().headers().frameOptions().disable().and()
