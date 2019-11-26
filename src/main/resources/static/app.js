@@ -454,14 +454,14 @@ function deConnexion() {
 
 function envoyerMessage() {
     var creation = Date.now();
-    var de = $("#avatar").attr('src');
+    var de = $("#hiddenID").val();
 
     stompClient.send("/sujet/public", {}, JSON.stringify({'texte': $("#texte").val() , 'creation': creation , 'de' : de, 'avatar': avatar,'status':"public" }));
 }
 
 function envoyerMessagePrive() {
     var creation = Date.now();
-    var de = $("#avatar").attr('src');
+    var de = $("#hiddenID").val();
 
     stompClient.send("/sujet/prive", {}, JSON.stringify({'texte': $("#texte").val(), 'creation': creation , 'de' : de, 'avatar': avatar,'status':"prive" }));
 }
@@ -559,7 +559,21 @@ function envoyerResultCombat(valeur,result) {
 function afficherReponse(message) {
     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     var date = new Date();
-    $("#reponses").append("<tr>"    + "<td><img width=100 height=75 src='" +  message.de    + "'/></td>" +
+    var base64img;
+    $.ajax(
+        {
+            url: '/getAvatarById/' + message.de,
+            type: 'GET',
+            contentType: 'application/json',
+            async: false,
+            success: function (id) {
+                base64img = id;
+            },
+            error: function (xhr, status, error) {
+                alert("Erreur!");
+            }
+        });
+    $("#reponses").append("<tr>"    + "<td><img width=100 height=75 src='" +  base64img    + "'/></td>" +
         "<td>" + date.toLocaleDateString('fr-FR',options) + " " + date.toLocaleTimeString() + "</td>" +
         "<td>" + message.status + ": " + message.texte + "</td>" +
         "</tr>");

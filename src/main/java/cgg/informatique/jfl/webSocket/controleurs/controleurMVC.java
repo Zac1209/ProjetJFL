@@ -40,6 +40,7 @@ public class controleurMVC {
             c = compte.get();
         }
 
+        model.addAttribute("id",c.getUsername());
         model.addAttribute("avatar",c.getAvatar().getAvatar());
         model.addAttribute("nom",c.getFullname());
         model.addAttribute("role",c.getRole().getRole());

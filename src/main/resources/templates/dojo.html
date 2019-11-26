@@ -32,6 +32,7 @@
                 <img id="avatar" th:src="${avatar}" height="100"/>
             </td>
             <td style="padding-left: 10px;">
+                <input type="hidden" id="hiddenID" th:value="${id}" />
                 <span th:text="${nom}" id="userID"/>, <span th:text="${role}" id="role"/>, ceinture <span th:text="${ceinture}" id="ceinture"/>
             </td>
         </tr>
