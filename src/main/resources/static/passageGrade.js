@@ -7,7 +7,6 @@ function passerExamen(username,evaluateur)
             contentType: 'application/json',
             async: false,
             success : function(id) {
-
             },
             error: function (xhr, status, error)
             {

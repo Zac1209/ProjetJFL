@@ -482,6 +482,20 @@ public class ReponseControleur {
         String courriel = auth.getName();
     }
 
+    @RequestMapping("/getCredit/{id}")
+    public int getCredit(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        int credit = combatDao.getCredit(compte.getUsername());
+        return credit;
+    }
+
+    @RequestMapping("/getPoint/{id}")
+    public int getPoint(@PathVariable String id) {
+        Compte compte = compteDao.findById(id).get();
+        int point = combatDao.getPointageActuel(compte.getUsername(),compte.getGroupe().getId());
+        return point;
+    }
+
 
     public static String getJSONFromMap(Map<String, String> inputMap) {
         Writer writer = new StringWriter();
