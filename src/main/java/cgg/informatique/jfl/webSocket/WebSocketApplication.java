@@ -25,18 +25,7 @@ import java.util.Scanner;
 
 @SpringBootApplication
 public class WebSocketApplication implements CommandLineRunner {
-	@Autowired
-	private AvatarDao avatarDao;
-	@Autowired
-	private CombatDao combatDao;
-	@Autowired
-	private CompteDao compteDao;
-	@Autowired
-	private ExamenDao examenDao;
-	@Autowired
-	private GroupeDao groupeDao;
-	@Autowired
-	private RoleDao roleDao;
+
 	public static void main(String[] args) {
 		SpringApplication.run(WebSocketApplication.class, args);
 	}
