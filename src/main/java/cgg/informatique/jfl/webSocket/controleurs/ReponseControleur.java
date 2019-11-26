@@ -526,10 +526,21 @@ public class ReponseControleur {
                 compteDao.findAll()) {
             userList.put(c.getUsername(),c.getAvatar().getAvatar());
         }
-
-
         return userList;
     }
+
+    @RequestMapping("/getMembreAdmissible")
+    public HashMap<String,String> getMembreAdmissible() {
+        HashMap<String,String> userList = new HashMap<>();
+        for (Compte c:compteDao.findAll()) {
+            if (combatDao.getPointageActuel(c.getUsername(), c.getGroupe().getId().toString()) >= 100 && combatDao.getCredit(c.getUsername()) >= 10) {
+                if (Integer.parseInt(c.getGroupe().getId()) < 7)
+                    userList.put(c.getUsername(),c.getAvatar().getAvatar());
+            }
+        }
+        return userList;
+    }
+
 
     public static String getJSONFromMap(Map<String, String> inputMap) {
         Writer writer = new StringWriter();
