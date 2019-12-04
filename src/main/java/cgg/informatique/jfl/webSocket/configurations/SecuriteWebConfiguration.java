@@ -39,7 +39,7 @@ public class SecuriteWebConfiguration extends WebSecurityConfigurerAdapter {
 
                 //Permettre l'accès à la console H2 uniquement au rôle ADMIN
                 .antMatchers("/kumite/**", "/kumite/").authenticated()
-                .antMatchers("/passageDeGrades/**", "/passageDeGrades/").hasAnyAuthority("SENSEI","VENERABLE")
+                .antMatchers("/passageDeGrades/**", "/passageDeGrades/").hasAnyRole("SENSEI","VENERABLE")
                 .and()
                 .formLogin()
 

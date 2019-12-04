@@ -190,6 +190,7 @@ public class ReponseControleur {
         combattantGauche = compteDao.findById(combGaucheID).get();
         competiteurs.remove(combattantDroit.getAvatar().getAvatar());
         competiteurs.remove(combattantGauche.getAvatar().getAvatar());
+        positionCombattant = new HashMap<>();
         positionCombattant.put(combattantDroit.getAvatar().getAvatar(),combDroitPos);
         positionCombattant.put(combattantGauche.getAvatar().getAvatar(),combGauchePos);
         arbitreActuel = compteDao.findById(arbitreID).get().getAvatar().getAvatar();
@@ -393,8 +394,9 @@ public class ReponseControleur {
             }
 
             int creditArbitre = arbitreAQuitter ? -5 : 1;
+            Compte arbitreCombat = compteDao.findById(getCompteByAvatar(arbitreActuel)).get();
             Combat combat = new Combat(System.currentTimeMillis(),
-                    compteDao.findById(getCompteByAvatar(arbitreActuel)).get(),
+                    arbitreCombat,
                     combattantDroit,
                     combattantGauche,
                     combattantDroit.getGroupe(),
@@ -403,6 +405,7 @@ public class ReponseControleur {
             combatDao.save(combat);
             WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantDroit.getUsername()+"\"}");
             WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantGauche.getUsername()+"\"}");
+            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+arbitreCombat.getUsername()+"\"}");
 
             new Thread(new Runnable() {
                 public void run(){
@@ -456,8 +459,6 @@ public class ReponseControleur {
             competiteurs.remove(compte.getAvatar().getAvatar());
         if(arbitres.contains(compte.getAvatar().getAvatar())) {
             arbitres.remove(compte.getAvatar().getAvatar());
-            if(arbitreActuel.equals(compte.getAvatar().getAvatar()))
-                arbitreActuel = "";
         }
         WebSocketApplication.session.send("/sujet/positionUpdate", new Message());
     }
