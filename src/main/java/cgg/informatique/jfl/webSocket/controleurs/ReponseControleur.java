@@ -200,45 +200,60 @@ public class ReponseControleur {
                 public void run(){
                     try {
                         Thread.sleep(8000);
-                        if(resultCombat.size() != 2){
-                            new Thread(new Runnable() {
-                                public void run(){
-                                    try {
-                                        Thread.sleep(10000);
-                                        positionCombattant = new HashMap<>();
-                                        resultCombat = new HashMap<>();
-                                        competiteurs.add(combattantGauche.getAvatar().getAvatar());
-                                        competiteurs.add(combattantDroit.getAvatar().getAvatar());
-                                        combattantDroit = null;
-                                        combattantGauche = null;
-                                        arbitreAQuitter = false;
-                                        if(!arbitreTemp.equals("")){
-                                            arbitreTemp = "";
-                                        }{
-                                            arbitreActuel = "";
-                                        }
+                        String positionDrapeauGagnant = "";
+                        int pointsBlanc = 0;
+                        int pointsRouge = 0;
+                        if(resultCombat.size() == 0) {
+                            positionDrapeauGagnant = "egal";
+                            pointsBlanc = Math.round((calculerPoints(Integer.parseInt(combattantGauche.getGroupe().getId()),Integer.parseInt(combattantDroit.getGroupe().getId()))) / 2);
+                            pointsRouge = Math.round((calculerPoints(Integer.parseInt(combattantDroit.getGroupe().getId()),Integer.parseInt(combattantGauche.getGroupe().getId()))) / 2);
 
-                                        WebSocketApplication.session.send("/sujet/resetCombat", new Message());
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                        }
+                        else{
+                            String avatarQuiAJouer = new ArrayList<String>(resultCombat.values()).get(0);
+                            String positionDeCeluiQuiAJouer = positionCombattant.get(avatarQuiAJouer);
 
-                                }
-                            }).start();
-                            String positionDrapeauGagnant = "";
-                            if(resultCombat.size() == 0)
-                                positionDrapeauGagnant = "egal";
-                            else{
-                                String avatarQuiAJouer = new ArrayList<String>(resultCombat.values()).get(0);
-                                String positionDeCeluiQuiAJouer = positionCombattant.get(avatarQuiAJouer);
-
-                                if(positionDeCeluiQuiAJouer.equals("9"))
-                                    positionDrapeauGagnant = "7";
-                                else
-                                    positionDrapeauGagnant = "5";
+                            if(positionDeCeluiQuiAJouer.equals("9")) {
+                                positionDrapeauGagnant = "7";
+                                pointsRouge = (calculerPoints(Integer.parseInt(combattantDroit.getGroupe().getId()),Integer.parseInt(combattantGauche.getGroupe().getId())));
 
                             }
-                            WebSocketApplication.session.send("/sujet/resultatCombat", new Message(positionDrapeauGagnant,"",""));
+                            else {
+                                pointsBlanc = (calculerPoints(Integer.parseInt(combattantGauche.getGroupe().getId()),Integer.parseInt(combattantDroit.getGroupe().getId())));
+                                positionDrapeauGagnant = "5";
+                            }
+                        }
+                        if(resultCombat.size() != 2){
+                            Compte arbitreCombat = compteDao.findById(getCompteByAvatar(arbitreActuel)).get();
+                            Combat combat = new Combat(System.currentTimeMillis(),
+                                    arbitreCombat,
+                                    combattantDroit,
+                                    combattantGauche,
+                                    combattantDroit.getGroupe(),
+                                    combattantGauche.getGroupe(),
+                                    1,pointsBlanc,pointsRouge);
+                            combatDao.save(combat);
+                            WebSocketApplication.session.send("/sujet/resultatCombat", new Message(positionDrapeauGagnant,positionDrapeauGagnant,""));
+                            Thread.sleep(3000);
+
+                            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantDroit.getUsername()+"\"}");
+                            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantGauche.getUsername()+"\"}");
+                            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+arbitreCombat.getUsername()+"\"}");
+                            positionCombattant = new HashMap<>();
+                            resultCombat = new HashMap<>();
+                            competiteurs.add(combattantGauche.getAvatar().getAvatar());
+                            competiteurs.add(combattantDroit.getAvatar().getAvatar());
+                            combattantDroit = null;
+                            combattantGauche = null;
+                            arbitreAQuitter = false;
+                            if(!arbitreTemp.equals("")){
+                                arbitreTemp = "";
+                            }{
+                                arbitreActuel = "";
+                            }
+
+                            WebSocketApplication.session.send("/sujet/resetCombat", new Message());
+
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -403,14 +418,16 @@ public class ReponseControleur {
                     combattantGauche.getGroupe(),
                     creditArbitre,pointsBlanc,pointsRouge);
             combatDao.save(combat);
-            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantDroit.getUsername()+"\"}");
-            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantGauche.getUsername()+"\"}");
-            WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+arbitreCombat.getUsername()+"\"}");
+
 
             new Thread(new Runnable() {
                 public void run(){
                     try {
                         Thread.sleep(10000);
+                        WebSocketApplication.session.send("/sujet/resetCombat", new Message());
+                        WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantDroit.getUsername()+"\"}");
+                        WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+combattantGauche.getUsername()+"\"}");
+                        WebSocketApplication.session.send("/sujet/updateInfoUser", "{\"user\":\""+arbitreCombat.getUsername()+"\"}");
                         positionCombattant = new HashMap<>();
                         resultCombat = new HashMap<>();
                         competiteurs.add(combattantGauche.getAvatar().getAvatar());
@@ -424,7 +441,7 @@ public class ReponseControleur {
                             arbitreActuel = "";
                         }
 
-                        WebSocketApplication.session.send("/sujet/resetCombat", new Message());
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
